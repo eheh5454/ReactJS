@@ -1,58 +1,60 @@
 import React from "react";
 import PropTypes from "prop-types";
+import axios from "axios";
 
-
-// {}를 붙이면 인자를 바로 가져올 수 있음, 자바스크립트를 사용한다는 뜻
-function PrintLike({name, picture, rating}){
-  return <div>
-    <h2>I like {name}</h2>
-    <h4>{rating}/5.0</h4>
-    <img src={picture} alt={name} />
-  </div>  
-}
-
-// 함수의 인자를 특정 타입으로 제한한다. 
-// 잘못된 자료가 들어가는 것을 방지한다. 
-// isRequired는 필수라는 뜻(없어도 됨)
-PrintLike.propTypes = {
-  name: PropTypes.string.isRequired,
-  picture: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
-};
-
-const Objects = [
-  {
-    id:1,
-    rating: 4.1,
-    name: "saw",
-    image: "https://firebasestorage.googleapis.com/v0/b/star-xr-c9c08.appspot.com/o/images%2F1.png?alt=media&token=f67f647c-2be0-4a96-8c2c-58f9588d79c8"
-  },
-  {
-    id:2,
-    rating: 4.2,
-    name: "spatula",
-    image: "https://firebasestorage.googleapis.com/v0/b/star-xr-c9c08.appspot.com/o/images%2F10.png?alt=media&token=74c7782d-5b43-465a-98e5-2e57cae382bd"
-  },
-  {
-    id:3,
-    rating: 4.3,
-    name: "Axe",
-    image: "https://firebasestorage.googleapis.com/v0/b/star-xr-c9c08.appspot.com/o/images%2F3.png?alt=media&token=ea593a7c-b2b6-4a2d-901f-f0230a166aa8"
+// App 클래스는 React 컴포넌트에서 확장한 것(그래서 렌더 메소드가 기본으로 있다.)
+class App extends React.Component{
+  // render 전에 호출 
+  constructor(props){
+    super(props);
+    console.log("hello");
   }
-];
 
-function renderObject(object){
-  return <PrintLike name={object.name} picture={object.image} />
-}
+  // render 후에 호출 
+  componentDidMount(){
+    setTimeout(()=>{
+      this.setState({isLoading:false});
+    }, 6000)
+    console.log("component rendered");
+  } 
 
-// key는 리액트 내부에서 사용하는 값
-function App() {
-  return (
-    <div>  
-      {Objects.map(object => (<PrintLike key={object.id} name ={object.name} picture={object.image} rating={object.rating} />))}
-    </div>
+  // setState가 호출되어 업데이트가 끝난 후 실행 
+  componentDidUpdate() {
+    console.log("Did Update");
+  }
+
+  // 컴포넌트가 죽을 때(페이지를 나감)
+  componentWillUnmount() {
+    console.log("component Unmount");
+  }
+
+  state = {
+    count: 0,
+    isLoading: true,
+    movies: []
+  };
+
+  // setState를 써야 렌더가 호출된다!!
+  // 펑션 방식으로 현재 스테이트의 카운트를 가져올 수 있음(this.state 안쓰고)
+  add = () => {
+    this.setState(current =>({count: current.count + 1}));
+    console.log("add");
+  };
+
+  minus = () => {
+    this.setState(current => ({count: current.count - 1}));
+    console.log("minus");
+  }
+
+  render(){
+    const {isLoading} = this.state;
+    return (
+      <div>
+        {isLoading ? "Loading": "We are Ready"}
+      </div>   
     
-  );
+    );
+  }
 }
 
 export default App;
