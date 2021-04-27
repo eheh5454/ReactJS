@@ -1,6 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
 import axios from "axios";
+import Movie from "./Movie";
+import "./App.css"
 
 // App 클래스는 React 컴포넌트에서 확장한 것(그래서 렌더 메소드가 기본으로 있다.)
 class App extends React.Component{
@@ -10,12 +11,16 @@ class App extends React.Component{
     console.log("hello");
   }
 
+  // 비동기로 영화 정보를 가져옴
+  getMovies = async() => {
+    const {data: {data:{movies}}} = await axios.get("https://yts-proxy.now.sh/list_movies.json");
+    console.log(movies);
+    this.setState({movies, isLoading:false});
+  }
+
   // render 후에 호출 
   componentDidMount(){
-    setTimeout(()=>{
-      this.setState({isLoading:false});
-    }, 6000)
-    console.log("component rendered");
+    this.getMovies();
   } 
 
   // setState가 호출되어 업데이트가 끝난 후 실행 
@@ -47,12 +52,23 @@ class App extends React.Component{
   }
 
   render(){
-    const {isLoading} = this.state;
+    const {isLoading, movies} = this.state;
     return (
-      <div>
-        {isLoading ? "Loading": "We are Ready"}
-      </div>   
-    
+      <section className="container">   
+        {isLoading ?(
+        <div className="loader">
+          <span className="loader__text">Loading...</span>
+        </div> 
+        ): (
+          <div className="movies">
+          {movies.map(movie => (          
+            <Movie key={movie.id} id={movie.id} year={movie.year} title={movie.title} summary={movie.summary} 
+            poster={movie.medium_cover_image} genres={movie.genres} />
+          ))}
+          </div>
+        )}
+        
+      </section>       
     );
   }
 }
